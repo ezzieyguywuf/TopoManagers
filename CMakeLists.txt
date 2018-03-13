@@ -10,28 +10,30 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wextra -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wextra -Wall")
 
-#set (CMAKE_HELPER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake_helper")
+set(BUILD_SHARED_LIBS ON)
+
+set (CMAKE_HELPER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake_helper")
 
 set(OCC_INCLUDE "/home/wolfie/Program/FreeCAD_dev/opencascade-7.1.0/inc")
 set(OCC_LIBRARIES "/home/wolfie/Program/FreeCAD_dev/opencascade-7.1.0/build/lin64/gcc/libd")
 set(OCCWRAPPER_INCLUDE "/home/wolfie/Program/FreeCAD_dev/OccWrapper/include")
 set(OCCWRAPPER_LIBRARIES "/home/wolfie/Program/FreeCAD_dev/OccWrapper/build/lib")
-#set(OCC_LIBS 
-    #TKBRep 
-    #TKPrim
-    #TKernel
-    #TKGeomAlgo
-    #TKTopAlgo
-    #TKMath 
-    #TKBO
-    #TKG3d
-    #TKGeomBase
-    #TKCAF
-    #TKLCAF
-    #TKBool
-    #TKFillet
-    ##TKShHealing
-    #)
+set(OCC_LIBS 
+    TKBRep 
+    TKPrim
+    TKernel
+    TKGeomAlgo
+    TKTopAlgo
+    TKMath 
+    TKBO
+    TKG3d
+    TKGeomBase
+    TKCAF
+    TKLCAF
+    TKBool
+    TKFillet
+    #TKShHealing
+    )
 
 include_directories(
     "include"
@@ -49,4 +51,4 @@ add_subdirectory(src)
 set(CTEST_ENVIRONMENT CTEST_OUTPUT_ON_FAILURE=1)
 enable_testing()
 
-#add_subdirectory(test)
+add_subdirectory(test)

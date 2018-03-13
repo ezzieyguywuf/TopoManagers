@@ -1,4 +1,5 @@
 #include <PrimitiveSolidManager.h>
+#include <OccModifiedSolid.h>
 
 #include <iostream>
 
@@ -81,12 +82,48 @@ Occ::Edge PrimitiveSolidManager::getEdgeByIndex(uint i) const
             {
                 return edge1;
             }
-        }
-    }
     throw std::runtime_error("That edge does not appear to be in mySolid");
 }
 
 Occ::Face PrimitiveSolidManager::getFaceByIndex(uint i) const
 {
     return mySolid.getFaces()[mappedFaces.at(i)];
+}
+
+bool PrimitiveSolidManager::hasEdge(uint i) const
+{
+    return mappedEdges.count(i);
+}
+
+bool PrimitiveSolidManager::hasFace(uint i) const
+{
+    return mappedFaces.count(i);
+}
+
+void PrimitiveSolidManager::updateSolid(const Occ::ModifiedSolid& aModifiedSolid)
+{
+    if (mySolid.getFaces() != aModifiedSolid.getOrigSolid().getFaces())
+    {
+        throw std::runtime_error("This ModifiedSolid does not appear to modify mySolid!");
+    }
+
+    for (const auto& pair : aModifiedSolid.getModifiedFaceIndices())
+    {
+        // We may be able to rely directly on pair.first as the key to access mappedFaces.
+        // Just to be safe, we'll do this "the long way". If performance becomes an issue,
+        // consider eliminating the next few lines and using `mappedFaces[pair.first] =
+        // pair.second` directly
+        Occ::Solid origSolid = aModifiedSolid.getOrigSolid();
+        Occ::Face origFace = origSolid.getFaces()[pair.first];
+        uint myIndex = this->getFaceIndex(origFace);
+        mappedFaces[myIndex] = pair.second;
+    }
+
+    mySolid = aModifiedSolid.getNewSolid();
+    // TODO update with New faces and Deleted faces as well.
+}
+
+const Occ::Solid& PrimitiveSolidManager::getSolid() const
+{
+    return mySolid;
 }

@@ -15,11 +15,17 @@ using uint = unsigned int;
 class PrimitiveSolidManager
 {
     public:
+        PrimitiveSolidManager() = default;
         PrimitiveSolidManager(Occ::Solid aSolid);
         uint getEdgeIndex(const Occ::Edge anEdge) const;
         uint getFaceIndex(const Occ::Face aFace) const;
         Occ::Edge getEdgeByIndex(uint i) const;
         Occ::Face getFaceByIndex(uint i) const;
+        bool hasEdge(uint i) const;
+        bool hasFace(uint i) const;
+
+        void updateSolid(const Occ::ModifiedSolid& aModifiedSolid);
+        const Occ::Solid& getSolid() const;
 
     private:
         Occ::Solid mySolid;
