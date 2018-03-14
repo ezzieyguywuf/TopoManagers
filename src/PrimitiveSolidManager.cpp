@@ -82,6 +82,8 @@ Occ::Edge PrimitiveSolidManager::getEdgeByIndex(uint i) const
             {
                 return edge1;
             }
+        }
+    }
     throw std::runtime_error("That edge does not appear to be in mySolid");
 }
 
