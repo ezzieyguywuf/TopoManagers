@@ -1,30 +1,35 @@
 #include <PrimitiveSolidManager.h>
 #include <OccModifiedSolid.h>
+#include <OccFaceComparator.h>
 
+#include <utility>
+#include <vector>
 #include <iostream>
+
+using std::vector;
 
 PrimitiveSolidManager::PrimitiveSolidManager(Occ::Solid aSolid)
     : mySolid(aSolid)
 {
     for (uint i = 0; i < mySolid.getFaces().size(); i++)
     {
-        mappedFaces.emplace(i, i);
+        mappedFaces[mappedFaces.size()] = {i};
     }
 
-    std::vector<uint> foundFaces;
+    vector<uint> foundFaces;
     for (uint i = 0; i < mySolid.getEdges().size(); i++)
     {
         foundFaces.clear();
         const Occ::Edge& myEdge = mySolid.getEdges()[i];
-        for (const auto& face : mappedFaces)
+        for (const auto& data : mappedFaces)
         {
-            const Occ::Face& checkFace = mySolid.getFaces()[face.first];
+            const Occ::Face& checkFace = mySolid.getFaces()[data.first];
             for (uint j = 0; j < checkFace.getEdges().size() ; j++)
             {
                 const Occ::Edge& checkEdge = checkFace.getEdges()[j];
                 if (myEdge.isSimilar(checkEdge))
                 {
-                    foundFaces.push_back(face.first);
+                    foundFaces.push_back(data.first);
                 }
             }
         }
@@ -62,7 +67,12 @@ uint PrimitiveSolidManager::getFaceIndex(const Occ::Face aFace) const
 {
     for (const auto& data : mappedFaces)
     {
-        if (aFace == mySolid.getFaces()[data.second])
+        const vector<uint>& indices = data.second;
+        if (indices.size() > 1)
+        {
+            continue;
+        }
+        if (aFace == mySolid.getFaces()[indices.at(0)])
         {
             return data.first;
         }
@@ -87,42 +97,74 @@ Occ::Edge PrimitiveSolidManager::getEdgeByIndex(uint i) const
     throw std::runtime_error("That edge does not appear to be in mySolid");
 }
 
-Occ::Face PrimitiveSolidManager::getFaceByIndex(uint i) const
+vector<Occ::Face> PrimitiveSolidManager::getFaceByIndex(uint i) const
 {
-    return mySolid.getFaces()[mappedFaces.at(i)];
+    vector<Occ::Face> outFaces;
+    for (uint index : mappedFaces.at(i))
+    {
+        outFaces.push_back(mySolid.getFaces()[index]);
+    }
+    return outFaces;
 }
 
-bool PrimitiveSolidManager::hasEdge(uint i) const
-{
-    return mappedEdges.count(i);
-}
+//bool PrimitiveSolidManager::hasEdge(uint i) const
+//{
+    //return mappedEdges.count(i);
+//}
 
-bool PrimitiveSolidManager::hasFace(uint i) const
-{
-    return mappedFaces.count(i);
-}
+//bool PrimitiveSolidManager::hasFace(uint i) const
+//{
+    //return mappedFaces.count(i);
+//}
 
 void PrimitiveSolidManager::updateSolid(const Occ::ModifiedSolid& aModifiedSolid)
 {
-    if (mySolid.getFaces() != aModifiedSolid.getOrigSolid().getFaces())
+    if (mySolid != aModifiedSolid.getOrigSolid())
     {
         throw std::runtime_error("This ModifiedSolid does not appear to modify mySolid!");
     }
 
-    for (const auto& pair : aModifiedSolid.getModifiedFaceIndices())
+    // we'll add these to the end of our map
+    vector<uint> toAdd;
+    for (auto& pair : mappedFaces)
     {
-        // We may be able to rely directly on pair.first as the key to access mappedFaces.
-        // Just to be safe, we'll do this "the long way". If performance becomes an issue,
-        // consider eliminating the next few lines and using `mappedFaces[pair.first] =
-        // pair.second` directly
-        Occ::Solid origSolid = aModifiedSolid.getOrigSolid();
-        Occ::Face origFace = origSolid.getFaces()[pair.first];
-        uint myIndex = this->getFaceIndex(origFace);
-        mappedFaces[myIndex] = pair.second;
+        const Occ::Solid& origSolid = aModifiedSolid.getOrigSolid();
+        const Occ::Face& origFace = origSolid.getFaces()[pair.first];
+        if (aModifiedSolid.isDeleted(origFace))
+        {
+            // when deleted, we point to an empty vector.
+            pair.second = {};
+        }
+        else
+        {
+            // first, update our map with the new vector
+            pair.second = aModifiedSolid.getModifiedFaceIndices(origFace);
+
+            // next, store values to add to our map
+            if (pair.second.size() > 1)
+            {
+                // if the face was split, create a new entry in our mappedFace map for
+                // each split face. Why? Imagine a User has index 0 representing the Top
+                // face of a box. now, that face is split into Top1 and Top2. index 0 will
+                // point to {Top1, Top2}. Great. But what if the user now wishes to obtain
+                // a reference to only Top1? That's why we make new entries.
+                toAdd.reserve(pair.second.size()); // preallocate memory
+                toAdd.insert(toAdd.end(), pair.second.begin(), pair.second.end());
+            }
+        }
+    }
+
+    for (uint i : toAdd)
+    {
+        mappedFaces.emplace(mappedFaces.size(), i);
+    }
+
+    for (const uint& i : aModifiedSolid.getNewFaceIndices())
+    {
+        mappedFaces.emplace(mappedFaces.size(), i);
     }
 
     mySolid = aModifiedSolid.getNewSolid();
-    // TODO update with New faces and Deleted faces as well.
 }
 
 const Occ::Solid& PrimitiveSolidManager::getSolid() const

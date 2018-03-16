@@ -47,7 +47,6 @@ TEST(PrimitiveSolidManager, FilletRetreivedEdge)
     Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
     // create the solid manager
     PrimitiveSolidManager mgr(myBox);
-
 }
 
 //TEST(PrimitiveSolidManager, UpdateSolid)
