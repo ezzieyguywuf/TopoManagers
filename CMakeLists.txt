@@ -14,10 +14,10 @@ set(BUILD_SHARED_LIBS ON)
 
 set (CMAKE_HELPER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake_helper")
 
-set(OCC_INCLUDE "/home/wolfie/Program/FreeCAD_dev/opencascade-7.1.0/inc")
-set(OCC_LIBRARIES "/home/wolfie/Program/FreeCAD_dev/opencascade-7.1.0/build/lin64/gcc/libd")
-set(OCCWRAPPER_INCLUDE "/home/wolfie/Program/FreeCAD_dev/OccWrapper/include")
-set(OCCWRAPPER_LIBRARIES "/home/wolfie/Program/FreeCAD_dev/OccWrapper/build/lib")
+set(OCC_INCLUDE "/home/wolfie/Program/CAD_dev/opencascade-7.2.0/inc")
+set(OCC_LIBRARIES "/home/wolfie/Program/CAD_dev/opencascade-7.2.0/build/lin64/gcc/libd")
+set(OCCWRAPPER_INCLUDE "/home/wolfie/Program/CAD_dev/OccWrapper/include")
+set(OCCWRAPPER_LIBRARIES "/home/wolfie/Program/CAD_dev/OccWrapper/build/lib")
 set(OCC_LIBS 
     TKBRep 
     TKPrim
