@@ -8,15 +8,14 @@ set(NEEDED_LIBS
     OccFaced
     OccSolidd
     OccShaped
-    OccBoxd
     OccCylinderd
-    PrimitiveSolidManager 
+    OccBooleanSolidd
     OccSolidModifierd 
     OccModifiedSolidd
-    OccModifiedSolidsd
     OccSolidMakerd )
 
-AddTest("PrimitiveSolidManagerTester" ${NEEDED_LIBS})
+AddTest("PrimitiveSolidManagerTester" ${NEEDED_LIBS} PrimitiveSolidManager)
+AddTest("CompoundSolidManagerTester" ${NEEDED_LIBS} CompoundSolidManager)
 
-#add_executable("SimpleTest" "SimpleTest.cpp")
-#target_link_libraries("SimpleTest" ${NEEDED_LIBS})
+add_executable("SimpleTest" "SimpleTest.cpp")
+target_link_libraries("SimpleTest" ${NEEDED_LIBS} CompoundSolidManager)
