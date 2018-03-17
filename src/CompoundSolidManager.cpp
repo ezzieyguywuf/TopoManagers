@@ -44,6 +44,20 @@ const Occ::Solid& CompoundSolidManager::getSolid() const
 void CompoundSolidManager::updateSolid(Occ::BooleanSolid newSolid, 
                                        vector<Occ::ModifiedSolid> modifiedBaseSolids)
 {
+    for (const Occ::ModifiedSolid& modSolid : modifiedBaseSolids)
+    {
+        bool found = false;
+        for (const Occ::ModifiedSolid& myBaseSolid : mySolid.getModifiedSolids())
+        {
+            if (modSolid.getOrigSolid() == myBaseSolid.getOrigSolid())
+            {
+                found = true;
+            }
+        }
+        if (not found)
+        {
+            throw std::runtime_error("This Occ::ModifiedSolid does not correspond to any of my base Occ::ModifiedSolids.");
+        }
+    }
     newSolid.getFaces();
-    modifiedBaseSolids[0];
 }

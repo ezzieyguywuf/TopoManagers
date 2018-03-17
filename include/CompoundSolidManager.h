@@ -38,8 +38,8 @@ class CompoundSolidManager : public ISolidManager
 
         // When we update our solid, we need two things:
         //     1) The new Occ::BooleanSolid
-        //     2) A list of Occ::ModifiedSolid that represent all of the changes to the
-        //        underlying solids that make up mySolid
+        //     2) A list of Occ::ModifiedSolid, one for each base solid in the original
+        //        Occ::BooleanSolid 
         //
         //  Take for example a simple cube and cylinder that have been fused. Our original
         //  mySolid may consist of a cube with edge length of 10 and a cylinder of radius
