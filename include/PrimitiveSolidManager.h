@@ -8,12 +8,12 @@ class PrimitiveSolidManager : public ISolidManager
     public:
         PrimitiveSolidManager() = default;
         PrimitiveSolidManager(Occ::Solid aSolid);
-        uint getFaceIndex(const Occ::Face aFace) const override;
+        uint getFaceIndex(const Occ::Face& aFace) const override;
         vector<Occ::Face> getFaceByIndex(uint i) const override;
 
         // Note: need to extend to deal with deleted and generated faces. Right now only
         // deals with modified faces.
-        void updateSolid(const Occ::ModifiedSolid& aModifiedSolid) override;
+        void updateSolid(const Occ::ModifiedSolid& aModifiedSolid);
         const Occ::Solid& getSolid() const override;
 
     private:

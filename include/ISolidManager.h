@@ -28,12 +28,9 @@ class ISolidManager
         // consistently returns the topological edge refered to by i
         inline const Occ::Edge& getEdgeByIndex(uint i) const;
         // returns an index that can be used to consistently retrieve a topological Face
-        virtual uint getFaceIndex(const Occ::Face aFace) const = 0;
+        virtual uint getFaceIndex(const Occ::Face& aFace) const = 0;
         // consistently returns the topological face refered to by i
         virtual vector<Occ::Face> getFaceByIndex(uint i) const = 0;
-
-        // Updates the managed solid from a single modified solid
-        virtual void updateSolid(const Occ::ModifiedSolid& aModifiedSolid) = 0;
 
         virtual const Occ::Solid& getSolid() const = 0;
     protected:

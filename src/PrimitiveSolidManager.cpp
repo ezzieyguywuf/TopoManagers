@@ -18,7 +18,7 @@ PrimitiveSolidManager::PrimitiveSolidManager(Occ::Solid aSolid)
     ISolidManager::mapEdges();
 }
 
-uint PrimitiveSolidManager::getFaceIndex(const Occ::Face aFace) const
+uint PrimitiveSolidManager::getFaceIndex(const Occ::Face& aFace) const
 {
     for (const auto& data : mappedFaces)
     {
