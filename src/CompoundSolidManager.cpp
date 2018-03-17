@@ -58,6 +58,10 @@ void CompoundSolidManager::updateSolid(Occ::BooleanSolid newSolid,
         {
             throw std::runtime_error("This Occ::ModifiedSolid does not correspond to any of my base Occ::ModifiedSolids.");
         }
+        if (not (modSolid.getNewSolid() == newSolid))
+        {
+            throw std::runtime_error("This Occ::ModifiedSolid does not appear to correspond to newSolid.");
+        }
     }
     newSolid.getFaces();
 }

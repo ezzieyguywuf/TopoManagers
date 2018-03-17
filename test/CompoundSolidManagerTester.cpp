@@ -65,3 +65,22 @@ TEST(CompoundSolidManager, updateSolidInvalidModifiedSolid)
 
     EXPECT_THROW(mgr.updateSolid(myFuse2, {cylMod}), std::runtime_error);
 }
+
+TEST(CompoundSolidManager, updateSolidMisMatchedModifiedSolid)
+{
+    // Create the original fusion
+    Occ::Box myBox = Occ::SolidMaker::makeBox(10, 10, 10);
+    Occ::Cylinder myCyl = Occ::SolidMaker::makeCylinder(2.5, 10);
+    Occ::BooleanSolid myFuse1 = Occ::SolidModifier::makeFusion(myBox, myCyl);
+    CompoundSolidManager mgr(myFuse1);
+
+    // Create the updated fusion
+    Occ::Cylinder myCyl2 = Occ::SolidMaker::makeCylinder(2.5, 5);
+    Occ::BooleanSolid myFuse2 = Occ::SolidModifier::makeFusion(myBox, myCyl2);
+
+    // Prepare incorrect information for updateSolid
+    Occ::Cylinder myCyl3 = Occ::SolidMaker::makeCylinder(2.5, 10);
+    Occ::ModifiedSolid cylMod(myCyl, myCyl3); // myCyl3 is not in myFuse2
+
+    EXPECT_THROW(mgr.updateSolid(myFuse2, {cylMod}), std::runtime_error);
+}
