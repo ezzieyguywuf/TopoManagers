@@ -1,5 +1,5 @@
 #include <PrimitiveSolidManager.h>
-//#include <CompoundSolidManager.h>
+#include <CompoundSolidManager.h>
 #include <OccSolidMaker.h>
 #include <OccSolidModifier.h>
 #include <OccBooleanSolid.h>
@@ -18,12 +18,11 @@
 int main(void)
 {
     Occ::Box myBox = Occ::SolidMaker::makeBox(10, 10, 10);
-    //Occ::Cylinder myCyl = Occ::SolidMaker::makeCylinder(2.5, 10);
-    //Occ::BooleanSolid myFuse = Occ::SolidModifier::makeFusion(myBox, myCyl);
-    //CompoundSolidManager mgr(myFuse);
+    Occ::Cylinder myCyl = Occ::SolidMaker::makeCylinder(2.5, 10);
+    Occ::BooleanSolid myFuse = Occ::SolidModifier::makeFusion(myBox, myCyl);
+    CompoundSolidManager mgr(myFuse);
     //uint i = mgr.getFaceIndex(myBox.getNamedFace(Occ::FaceName::top));
     //std::cout << "i = " << i << std::endl;
-    PrimitiveSolidManager mgr(myBox);
     std::cout << mgr.getSolid().getFaces().size() << std::endl;
 
     return 0;

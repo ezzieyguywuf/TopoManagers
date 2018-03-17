@@ -2,43 +2,38 @@
 
 #include <stdexcept>
 
-CompoundSolidManager::CompoundSolidManager(OccBooleanSolid aSolid)
+CompoundSolidManager::CompoundSolidManager(Occ::BooleanSolid aSolid)
     : mySolid(aSolid)
 {
     uint i = 0;
-    for (const Occ::Face& newface : mySolid.getFaces())
+    for (const Occ::Face& newFace : mySolid.getFaces())
     {
-        pair<uint, uint> data = mySolid.getConstituentFace(newFace);
-        mappedFaces.emplace(i, data);
+        mappedFaces.emplace(i, mySolid.getConstituentFace(newFace));
         i++;
     }
+    ISolidManager::mapEdges();
 }
 
 uint CompoundSolidManager::getFaceIndex(const Occ::Face& aFace) const
 {
     for (const auto& data : mappedFaces)
     {
-        pair<uint, uint> origMap = data.second;
-        Occ::ModifiedSolid aModifiedSolid = mySolid.getModifiedSolids()[origMap.first];
-        const Occ::Face& origFace = aModifiedSolid.getOrigSolid().getFaces()[origMap.second];
-        if (aModifiedSolid.isModified(origFace))
+        Occ::Face checkFace = this->getFaceByIndex(data.first)[0];
+        if (aFace == checkFace)
         {
-            const Occ::Face& newFace = aModifiedSolid.getModifiedFace(origFace);
-            if (aFace == newFace)
-            {
-                return data.first;
-            }
+            return data.first;
         }
     }
     throw std::runtime_error("That face does not appear to originate from any of mySolid.getModifiedSolids()");
 }
 
-const Occ::Face& CompoundSolidManager::getFaceByIndex(uint i) const
+vector<Occ::Face> CompoundSolidManager::getFaceByIndex(uint i) const
 {
-    const auto& data = mappedFaces.at(i);
-    const vector<Occ::ModifiedSolid>& modSolids = mySolid.getModifiedSolids()
-    const Occ::Face& origFace = modSolids.at(data.first).getOrigSolid().getFaces()[data.second];
-    return modSolids.at(data.first).getModifiedFace(origFace);
+    array<uint, 3> origMap = mappedFaces.at(i);
+    const Occ::ModifiedSolid& modSolid = mySolid.getModifiedSolids()[origMap[0]];
+    const Occ::Face& origFace = modSolid.getOrigSolid().getFaces()[origMap[1]];
+    uint index = modSolid.getModifiedFaceIndices(origFace)[origMap[2]];
+    return {modSolid.getNewSolid().getFaces()[index]};
 }
 
 const Occ::Solid& CompoundSolidManager::getSolid() const

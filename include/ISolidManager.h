@@ -36,7 +36,7 @@ class ISolidManager
     protected:
         // Note: this must be called by the inheriting class after initializing whatever
         // face mapping they need to do. mapEdges makes use of getFaceIndex
-        void mapEdges();
+        inline void mapEdges();
     private:
         // A map in which the key will always refer to the same edge in
         // getSolid().getEdges(). This is done by identifying each edge by the two faces that

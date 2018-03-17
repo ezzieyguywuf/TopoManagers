@@ -15,7 +15,7 @@ set(NEEDED_LIBS
     OccSolidMakerd )
 
 AddTest("PrimitiveSolidManagerTester" ${NEEDED_LIBS} PrimitiveSolidManager)
-#AddTest("CompoundSolidManagerTester" ${NEEDED_LIBS} CompoundSolidManager)
+AddTest("CompoundSolidManagerTester" ${NEEDED_LIBS} CompoundSolidManager)
 
 add_executable("SimpleTest" "SimpleTest.cpp")
-target_link_libraries("SimpleTest" ${NEEDED_LIBS} PrimitiveSolidManager)
+target_link_libraries("SimpleTest" ${NEEDED_LIBS} PrimitiveSolidManager CompoundSolidManager)
