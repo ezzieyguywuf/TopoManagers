@@ -3,6 +3,7 @@
 #include <OccSolidModifier.h>
 #include <OccModifiedSolid.h>
 #include <OccBooleanSolid.h>
+
 #include "gtest/gtest.h"
 
 TEST(CompoundSolidManager, Create){
@@ -14,33 +15,32 @@ TEST(CompoundSolidManager, Create){
     EXPECT_GE(i, 0);
 }
 
-//TEST(CompoundSolidManager, getEdgeByIndex)
-//{
-    //// create the box
-    //Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
-    //// create the solid manager
-    //CompoundSolidManager mgr(myBox);
+TEST(CompoundSolidManager, updateSolid)
+{
+    // Create the original fusion
+    Occ::Box myBox = Occ::SolidMaker::makeBox(10, 10, 10);
+    Occ::Cylinder myCyl = Occ::SolidMaker::makeCylinder(2.5, 10);
+    Occ::BooleanSolid myFuse = Occ::SolidModifier::makeFusion(myBox, myCyl);
+    CompoundSolidManager mgr(myFuse);
 
-    //// get an Edge index (note: in a real-world application, the user would select an edge
-    //// with a mouse.)
-    //Occ::Face front = myBox.getNamedFace(Occ::FaceName::front);
-    //Occ::Face right = myBox.getNamedFace(Occ::FaceName::right);
-    //Occ::Edge frontRightEdge = front.getCommonEdge(right);
-    //uint frontRightEdgeIndex = mgr.getEdgeIndex(frontRightEdge);
+    // Get a constant reference. We know from testing that Edge[9] is the one between the
+    // cubic "top" and cubic "front" on the fused solid
+    uint i = mgr.getEdgeIndex(mgr.getSolid().getEdges()[9]);
 
-    //// update the managed solid
-    //Occ::Box newBox = Occ::SolidMaker::makeBox(5, 5, 5);
-    //Occ::ModifiedSolid modSolid(myBox, newBox);
-    //mgr.updateSolid(modSolid);
+    // Create the updated fusion
+    Occ::Cylinder myCyl2 = Occ::SolidMaker::makeCylinder(2.5, 5);
+    Occ::BooleanSolid myUpdatedFuse = Occ::SolidModifier::makeFusion(myBox, myCyl2);
 
-    //// retrieve the Edge using our index
-    //Occ::Edge retrievedFrontRightEdge = mgr.getEdgeByIndex(frontRightEdgeIndex);
+    // Prepare the information to update our CompoundSolidManager
+    Occ::ModifiedSolid cylMod(myCyl, myCyl2);
 
-    //// Now, in order to check it, build it from scratch too
-    //front = newBox.getNamedFace(Occ::FaceName::front);
-    //right = newBox.getNamedFace(Occ::FaceName::right);
-    //Occ::Edge checkFrontRightEdge = front.getCommonEdge(right);
+    // update our CompoundSolidManager
+    mgr.updateSolid(myUpdatedFuse, {cylMod});
 
-    //EXPECT_NE(frontRightEdge, retrievedFrontRightEdge);
-    //EXPECT_EQ(checkFrontRightEdge, retrievedFrontRightEdge);
-//}
+    // retrieve our desired Edge, as well as the original (for comparison).
+    const Occ::Edge& originalEdge = myFuse.getEdges()[9];
+    const Occ::Edge& retreivedEdge = mgr.getEdgeByIndex(i);
+
+    EXPECT_TRUE(originalEdge.overlaps(retreivedEdge));
+    EXPECT_NE(originalEdge, retreivedEdge);
+}

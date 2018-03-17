@@ -36,6 +36,21 @@ class CompoundSolidManager : public ISolidManager
         vector<Occ::Face> getFaceByIndex(uint i) const override;
         const Occ::Solid& getSolid() const override;
 
+        // When we update our solid, we need two things:
+        //     1) The new Occ::BooleanSolid
+        //     2) A list of Occ::ModifiedSolid that represent all of the changes to the
+        //        underlying solids that make up mySolid
+        //
+        //  Take for example a simple cube and cylinder that have been fused. Our original
+        //  mySolid may consist of a cube with edge length of 10 and a cylinder of radius
+        //  2.5 and height 10.
+        //
+        //  When updateSolid is called, the new fused shape has the same cube but a
+        //  cylinder of height 5. Therefore, updateSolid will expect a single
+        //  Occ::ModifiedSolid that gives the mapping of the faces from the original
+        //  cylinder to the new shorter cylinder. Since tho cube hasn't changed, no
+        //  Occ::ModifiedSolid is needed for it
+        void updateSolid(Occ::BooleanSolid newSolid, vector<Occ::ModifiedSolid> modifiedBaseSolids);
     private:
         const Occ::Face& getSingleFaceByIndex(uint i) const;
 

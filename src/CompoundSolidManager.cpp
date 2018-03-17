@@ -40,3 +40,10 @@ const Occ::Solid& CompoundSolidManager::getSolid() const
 {
     return mySolid;
 }
+
+void CompoundSolidManager::updateSolid(Occ::BooleanSolid newSolid, 
+                                       vector<Occ::ModifiedSolid> modifiedBaseSolids)
+{
+    newSolid.getFaces();
+    modifiedBaseSolids[0];
+}

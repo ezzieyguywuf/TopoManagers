@@ -5,6 +5,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 set(NEEDED_LIBS
     ${OCC_LIBS}
+    OccEdged
     OccFaced
     OccSolidd
     OccShaped
