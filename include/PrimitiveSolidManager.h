@@ -1,37 +1,20 @@
 #ifndef PRIMITIVESOLIDMANAGER_H
 #define PRIMITIVESOLIDMANAGER_H
 
-#include <OccSolid.h>
-#include <OccFace.h>
-#include <OccEdge.h>
-#include <OccTypes.h>
+#include <ISolidManager.h>
 
-#include <map>
-#include <utility>
-#include <vector>
-
-using std::map;
-using std::pair;
-using std::vector;
-using Occ::uint;
-using Occ::uints;
-
-class PrimitiveSolidManager
+class PrimitiveSolidManager : public ISolidManager
 {
     public:
         PrimitiveSolidManager() = default;
         PrimitiveSolidManager(Occ::Solid aSolid);
-        uint getEdgeIndex(const Occ::Edge anEdge) const;
-        uint getFaceIndex(const Occ::Face aFace) const;
-        Occ::Edge getEdgeByIndex(uint i) const;
-        vector<Occ::Face> getFaceByIndex(uint i) const;
-        //bool hasEdge(uint i) const;
-        //bool hasFace(uint i) const;
+        uint getFaceIndex(const Occ::Face aFace) const override;
+        vector<Occ::Face> getFaceByIndex(uint i) const override;
 
         // Note: need to extend to deal with deleted and generated faces. Right now only
         // deals with modified faces.
-        void updateSolid(const Occ::ModifiedSolid& aModifiedSolid);
-        const Occ::Solid& getSolid() const;
+        void updateSolid(const Occ::ModifiedSolid& aModifiedSolid) override;
+        const Occ::Solid& getSolid() const override;
 
     private:
         Occ::Solid mySolid;
@@ -41,11 +24,6 @@ class PrimitiveSolidManager
         // the key refers to. We store a vector of indices rather than a single index
         // because a given face could be split.
         map<uint, vector<uint>> mappedFaces;
-        // A map in which the key will always refer to the same edge in
-        // mySolid.getEdges(). This is done by identifying each edge by the two faces that
-        // make it up. Therefore, in order to identify an edge, we simply keep track of
-        // each face.
-        map<uint, pair<uint, uint>> mappedEdges;
 };
 
 #endif /* PRIMITIVESOLIDMANAGER_H */

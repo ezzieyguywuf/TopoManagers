@@ -1,7 +1,11 @@
 #include <PrimitiveSolidManager.h>
+//#include <CompoundSolidManager.h>
 #include <OccSolidMaker.h>
+#include <OccSolidModifier.h>
+#include <OccBooleanSolid.h>
 #include <OccShape.h>
 #include <OccBox.h>
+#include <OccCylinder.h>
 #include <OccEdge.h>
 #include <TopoDS_Shape.hxx>
 #include <BRepFilletAPI_MakeFillet.hxx>
@@ -13,32 +17,14 @@
 
 int main(void)
 {
-    // create manager
-    Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
+    Occ::Box myBox = Occ::SolidMaker::makeBox(10, 10, 10);
+    //Occ::Cylinder myCyl = Occ::SolidMaker::makeCylinder(2.5, 10);
+    //Occ::BooleanSolid myFuse = Occ::SolidModifier::makeFusion(myBox, myCyl);
+    //CompoundSolidManager mgr(myFuse);
+    //uint i = mgr.getFaceIndex(myBox.getNamedFace(Occ::FaceName::top));
+    //std::cout << "i = " << i << std::endl;
     PrimitiveSolidManager mgr(myBox);
+    std::cout << mgr.getSolid().getFaces().size() << std::endl;
 
-    Occ::Box box1 = static_cast<Occ::Box>(mgr.getSolid());
-    Occ::Box box2(Occ::SolidMaker::makeBox(10, 10, 5));
-    Occ::ModifiedSolid modSolid(box1, box2);
-
-    //// find edge using OCC
-    //BRepFilletAPI_MakeFillet mkFillet(myBox.getShape());
-    //TopTools_IndexedMapOfShape mapOfShape;
-    //TopExp::MapShapes(mgr.getSolid().getShape(), TopAbs_EDGE, mapOfShape);
-    //TopoDS_Edge anEdge = TopoDS::Edge(mapOfShape.FindKey(6));
-
-    //// get index for this Edge
-    //unsigned int id = mgr.getEdgeIndex(anEdge);
-    //std::cout << "retreived ID = " << id << std::endl;
-
-    //// retrieve the Edge using the ID
-    //Occ::Edge retreivedEdge = mgr.getEdgeByIndex(id);
-
-    //// add edge to the fillet operation
-    //mkFillet.Add(1.0, 1.0, TopoDS::Edge(retreivedEdge.getShape()));
-
-    //// make the fillet.
-    //mkFillet.Build();
-    //mkFillet.Shape();
     return 0;
 }
