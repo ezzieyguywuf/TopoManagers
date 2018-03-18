@@ -19,12 +19,17 @@ class PrimitiveSolidManager : public ISolidManager
         // Note: need to extend to deal with deleted and generated faces. Right now only
         // deals with modified faces.
         void updateSolid(const Occ::ModifiedSolid& aModifiedSolid);
-        // Creates a Occ::ModifiedSolid that explains the differences between mySolid and
-        // aManager.mySolid
+        // TODO does it make more sense for this to be non-static? Does it make it less
+        // error-prone (i.e. swapping the two parameters)?
         //
-        // throws std::runtime_error if aManager.myFirstSolid and myFirstSolid are not
+        // Creates a Occ::ModifiedSolid that explains the differences between
+        // mgrOld.mySolid and mgrNew.mySolid
+        //
+        // throws std::runtime_error if mgrNew.myFirstSolid and mgrOld.myFirstSolid are not
         // equivalent.
-        const Occ::ModifiedSolid makeModifiedSolid(const PrimitiveSolidManager& aManager) const;
+        static Occ::ModifiedSolid 
+            makeModifiedSolid(const PrimitiveSolidManager& mgrOld,
+                              const PrimitiveSolidManager& mgrNew);
         const Occ::Solid& getSolid() const override;
 
     private:
