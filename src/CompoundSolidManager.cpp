@@ -14,6 +14,20 @@ CompoundSolidManager::CompoundSolidManager(Occ::BooleanSolid aSolid)
     ISolidManager::mapEdges();
 }
 
+CompoundSolidManager::CompoundSolidManager(const CompoundSolidManager& aManager)
+    : mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
+{
+    ISolidManager::mapEdges();
+}
+
+CompoundSolidManager CompoundSolidManager::operator=(const CompoundSolidManager& aManager)
+{
+    mySolid = aManager.mySolid;
+    mappedFaces = aManager.mappedFaces;
+    ISolidManager::mapEdges();
+    return *this;
+}
+
 uint CompoundSolidManager::getFaceIndex(const Occ::Face& aFace) const
 {
     for (const auto& data : mappedFaces)

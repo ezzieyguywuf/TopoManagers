@@ -22,6 +22,13 @@ class CompoundSolidManager : public ISolidManager
 {
     public:
         CompoundSolidManager(Occ::BooleanSolid someSolids);
+
+        //rule of three
+        CompoundSolidManager(const CompoundSolidManager& aManager);
+        CompoundSolidManager operator=(const CompoundSolidManager& aManager);
+        ~CompoundSolidManager() = default;
+
+
         // each someSolid must contain a someSolid.getOrigSolid() that corresponds to one
         // of myBases[n].getNewSolid().
         //

@@ -92,6 +92,7 @@ vector<Occ::Edge> ISolidManager::getEdgeByIndex(uint i) const
 void ISolidManager::mapEdges()
 
 {
+    mappedEdges.clear();
     const Occ::Solid& theSolid = this->getSolid();
     uint count;
     for (const Occ::Edge& checkEdge : theSolid.getEdges())
