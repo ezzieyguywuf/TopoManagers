@@ -9,7 +9,7 @@
 using std::vector;
 
 PrimitiveSolidManager::PrimitiveSolidManager(Occ::Solid aSolid)
-    : mySolid(aSolid)
+    : myFirstSolid(aSolid), mySolid(aSolid)
 {
     for (uint i = 0; i < mySolid.getFaces().size(); i++)
     {
@@ -19,13 +19,14 @@ PrimitiveSolidManager::PrimitiveSolidManager(Occ::Solid aSolid)
 }
 
 PrimitiveSolidManager::PrimitiveSolidManager(const PrimitiveSolidManager& aManager)
-    : mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
+    : myFirstSolid(aManager.myFirstSolid), mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
 {
     ISolidManager::mapEdges();
 }
 
 PrimitiveSolidManager PrimitiveSolidManager::operator=(const PrimitiveSolidManager& aManager)
 {
+    this->myFirstSolid = aManager.myFirstSolid;
     this->mySolid = aManager.mySolid;
     this->mappedFaces = aManager.mappedFaces;
     ISolidManager::mapEdges();
@@ -117,6 +118,15 @@ void PrimitiveSolidManager::updateSolid(const Occ::ModifiedSolid& aModifiedSolid
     }
 
     mySolid = aModifiedSolid.getNewSolid();
+}
+
+const Occ::ModifiedSolid 
+    PrimitiveSolidManager::makeModifiedSolid(const PrimitiveSolidManager& aManager) const
+{
+    if (myFirstSolid != aManager.myFirstSolid)
+    {
+    }
+    throw std::runtime_error("aManager does not seem to share a myFirstSolid with me.");
 }
 
 const Occ::Solid& PrimitiveSolidManager::getSolid() const

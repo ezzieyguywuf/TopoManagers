@@ -44,37 +44,37 @@ TEST(PrimitiveSolidManager, getEdgeByIndex)
     EXPECT_EQ(retrievedFrontRightEdges.size(), 1);
 }
 
-TEST(PrimitiveSolidManager, FilletRetreivedEdge)
-{
-    Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
-    // create the solid manager
-    PrimitiveSolidManager mgr(myBox);
-}
-
-//TEST(PrimitiveSolidManager, UpdateSolid)
+//TEST(PrimitiveSolidManager, FilletRetreivedEdge)
 //{
+    //// TODO finish writing test?
     //Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
-    //Occ::Cylinder myCyl(Occ::SolidMaker::makeCylinder(2.5, 10));
-    //Occ::ModifiedSolids resultData(Occ::SolidModifier::makeFusion(myBox, myCyl));
-
-    //PrimitiveSolidManager mgr(resultData.getNewSolid());
-    //// Front and right faces don't change due to the fusion, so we can access them
-    //// directly using Occ::Box methods
-    //Occ::Face origFront = myBox.getFace(Occ::FaceName::front);
-    //Occ::Face origRight = myBox.getFace(Occ::FaceName::right);
-    //// the left face was affected, so this is a little more tricky.
-    //Occ::Face origLeft = resultData.getModifiedSolids()[0].getModifiedFace(myBox.getFace(Occ::FaceName::left));
-
-    //// Now, get the "robust reference" to each of these faces.
-    //uint indexFront = mgr.getFaceIndex(origFront);
-    //uint indexRight = mgr.getFaceIndex(origRight);
-    //uint indexLeft = mgr.getFaceIndex(origLeft);
-    //uint indexFrontRightEdge = mgr.getEdgeIndex(origFront.getCommonEdge(origRight));
-    //uint indexFrontLeftEdge = mgr.getEdgeIndex(origFront.getCommonEdge(origLeft));
-
-    //Occ::Edge origFrontRightEdge = mgr.getEdgeByIndex(indexFrontRightEdge);
-
-    //// next, change the managed solid
-    //myCyl = Occ::SolidMaker::makeCylinder(2.5, 5);
-    //resultData = Occ::SolidModifier::makeFusion(myBox, myCyl);
+    //// create the solid manager
+    //PrimitiveSolidManager mgr(myBox);
 //}
+
+TEST(PrimitiveSolidManager, makeModifiedSolidInvalidFirstSolid)
+{
+    Occ::Box myBox1(Occ::SolidMaker::makeBox(10, 10, 10));
+    Occ::Box myBox2(Occ::SolidMaker::makeBox(5, 10, 10));
+    Occ::Box myBox3(Occ::SolidMaker::makeBox(10, 5, 10));
+    Occ::Box myBox4(Occ::SolidMaker::makeBox(10, 10, 5));
+    Occ::Box myBox5(Occ::SolidMaker::makeBox(5, 10, 5));
+
+    // create the solid manager
+    PrimitiveSolidManager mgr1(myBox1);
+
+    // modify it a few times
+    Occ::ModifiedSolid mod1(myBox1, myBox2);
+    Occ::ModifiedSolid mod2(myBox2, myBox3);
+    Occ::ModifiedSolid mod3(myBox3, myBox4);
+
+    mgr1.updateSolid(mod1);
+    mgr1.updateSolid(mod2);
+    mgr1.updateSolid(mod3);
+
+    // create a different solid manager
+    PrimitiveSolidManager mgr2(myBox5);
+
+    EXPECT_THROW(mgr1.makeModifiedSolid(myBox5), std::runtime_error);
+    EXPECT_THROW(mgr2.makeModifiedSolid(myBox4), std::runtime_error);
+}
