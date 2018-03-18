@@ -26,7 +26,7 @@ class ISolidManager
         // returns an index that can  be used to consistently retrieve a topological Edge
         inline uint getEdgeIndex(const Occ::Edge& anEdge) const;
         // consistently returns the topological edge refered to by i
-        inline const Occ::Edge& getEdgeByIndex(uint i) const;
+        inline vector<Occ::Edge> getEdgeByIndex(uint i) const;
         // returns an index that can be used to consistently retrieve a topological Face
         virtual uint getFaceIndex(const Occ::Face& aFace) const = 0;
         // consistently returns the topological face refered to by i
@@ -49,29 +49,44 @@ uint ISolidManager::getEdgeIndex(const Occ::Edge& anEdge) const
 {
     for (const auto& data : mappedEdges)
     {
-        if (anEdge.isSimilar(this->getEdgeByIndex(data.first)))
+        for (Occ::Edge checkEdge : this->getEdgeByIndex(data.first))
         {
-            return data.first;
+            if (anEdge.isSimilar(checkEdge))
+            {
+                return data.first;
+            }
         }
     }
     throw std::runtime_error("Was unable to find anEdge in mySolid.");
 }
 
-const Occ::Edge& ISolidManager::getEdgeByIndex(uint i) const
+vector<Occ::Edge> ISolidManager::getEdgeByIndex(uint i) const
 {
-    const Occ::Face& face1 = this->getSolid().getFaces()[mappedEdges.at(i).first];
-    const Occ::Face& face2 = this->getSolid().getFaces()[mappedEdges.at(i).second];
-    for (const auto& edge1 : face1.getEdges())
+    auto faces1 = this->getFaceByIndex(mappedEdges.at(i).first);
+    auto faces2 = this->getFaceByIndex(mappedEdges.at(i).second);
+
+    vector<Occ::Edge> outEdges;
+    for (const Occ::Face& face1 : faces1)
     {
-        for (const auto& edge2 : face2.getEdges())
+        for (const Occ::Face& face2 : faces2)
         {
-            if (edge1.isSimilar(edge2))
+            for (const auto& edge1 : face1.getEdges())
             {
-                return edge1;
+                for (const auto& edge2 : face2.getEdges())
+                {
+                    if (edge1.isSimilar(edge2))
+                    {
+                        outEdges.push_back(edge1);
+                    }
+                }
             }
         }
     }
-    throw std::runtime_error("That edge does not appear to be in mySolid");
+    if (outEdges.size() == 0)
+    {
+        throw std::runtime_error("That edge does not appear to be in mySolid");
+    }
+    return outEdges;
 }
 
 void ISolidManager::mapEdges()

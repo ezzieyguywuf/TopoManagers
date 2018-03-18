@@ -52,7 +52,9 @@ class CompoundSolidManager : public ISolidManager
         //  Occ::ModifiedSolid is needed for it
         void updateSolid(Occ::BooleanSolid newSolid, vector<Occ::ModifiedSolid> modifiedBaseSolids);
     private:
-        const Occ::Face& getSingleFaceByIndex(uint i) const;
+        // helper method used by updateSolid
+        // TODO: need to deal with deleted faces and split faces.
+        void updateMappedFaces(uint i, const Occ::ModifiedSolid& newModSolid);
 
         Occ::BooleanSolid mySolid;
         // The unique ID for each face in mySolid will consist of a set of three values

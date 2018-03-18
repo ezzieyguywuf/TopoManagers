@@ -47,21 +47,59 @@ void CompoundSolidManager::updateSolid(Occ::BooleanSolid newSolid,
     for (const Occ::ModifiedSolid& modSolid : modifiedBaseSolids)
     {
         bool found = false;
+        uint i = 0;
         for (const Occ::ModifiedSolid& myBaseSolid : mySolid.getModifiedSolids())
         {
             if (modSolid.getOrigSolid() == myBaseSolid.getOrigSolid())
+            {
+                found = true;
+                this->updateMappedFaces(i, modSolid);
+            }
+            i++;
+        }
+        if (not found)
+        {
+            throw std::runtime_error("This Occ::ModifiedSolid does not correspond to any of my base Occ::ModifiedSolids.");
+        }
+
+        found = false;
+        for (const Occ::ModifiedSolid newBaseSolid : newSolid.getModifiedSolids())
+        {
+            if (newBaseSolid.getOrigSolid() == modSolid.getNewSolid())
             {
                 found = true;
             }
         }
         if (not found)
         {
-            throw std::runtime_error("This Occ::ModifiedSolid does not correspond to any of my base Occ::ModifiedSolids.");
-        }
-        if (not (modSolid.getNewSolid() == newSolid))
-        {
             throw std::runtime_error("This Occ::ModifiedSolid does not appear to correspond to newSolid.");
         }
     }
-    newSolid.getFaces();
+    mySolid = newSolid;
+}
+
+//--------------------------------------------------
+//------ Private Methods ---------------------------
+//--------------------------------------------------
+
+void CompoundSolidManager::updateMappedFaces(uint i, const Occ::ModifiedSolid& newModSolid)
+{
+    const Occ::ModifiedSolid origModSolid = mySolid.getModifiedSolids()[i];
+    for(auto& data : mappedFaces)
+    {
+        std::array<uint, 3>& indices = data.second;
+        if (indices[0] == i)
+        {
+            // get the original constiutent face
+            const Occ::Face origConstituentFace = origModSolid.getOrigSolid().getFaces()[indices[1]];
+            // find out what the new constiuent face(s) is/are
+            vector<uint> newConstituentFaceIndices = newModSolid.getModifiedFaceIndices(origConstituentFace);
+            if (newConstituentFaceIndices.size() > 1)
+            {
+                std::clog << "Constituent face has been split. Only taking the first value. TODO: be better.";
+            }
+            indices[1] = newConstituentFaceIndices[0];
+            break;
+        }
+    }
 }

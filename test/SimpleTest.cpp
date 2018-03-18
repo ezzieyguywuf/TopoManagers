@@ -21,9 +21,13 @@ int main(void)
     Occ::Cylinder myCyl = Occ::SolidMaker::makeCylinder(2.5, 10);
     Occ::BooleanSolid myFuse = Occ::SolidModifier::makeFusion(myBox, myCyl);
     CompoundSolidManager mgr(myFuse);
-    //uint i = mgr.getFaceIndex(myBox.getNamedFace(Occ::FaceName::top));
-    //std::cout << "i = " << i << std::endl;
-    std::cout << mgr.getSolid().getFaces().size() << std::endl;
+    uint i = mgr.getEdgeIndex(myFuse.getEdges()[9]);
+    std::cout << "i = " << i << std::endl;
+
+    Occ::Cylinder myCyl2 = Occ::SolidMaker::makeCylinder(2.5, 5);
+    Occ::BooleanSolid myFuse2 = Occ::SolidModifier::makeFusion(myBox, myCyl2);
+    Occ::ModifiedSolid cylMod(myCyl, myCyl2);
+    mgr.updateSolid(myFuse2, {cylMod});
 
     return 0;
 }

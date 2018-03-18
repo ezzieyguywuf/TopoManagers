@@ -41,10 +41,11 @@ TEST(CompoundSolidManager, updateSolid)
 
     // retrieve our desired Edge, as well as the original (for comparison).
     const Occ::Edge& originalEdge = myFuse.getEdges()[9];
-    const Occ::Edge& retreivedEdge = mgr.getEdgeByIndex(i);
+    vector<Occ::Edge> retreivedEdges = mgr.getEdgeByIndex(i);
+    const Occ::Edge& retreivedEdge = retreivedEdges[0];
 
     EXPECT_TRUE(originalEdge.overlaps(retreivedEdge));
-    EXPECT_NE(originalEdge, retreivedEdge);
+    EXPECT_EQ(retreivedEdges.size(), 1);
 }
 
 TEST(CompoundSolidManager, updateSolidInvalidModifiedSolid)

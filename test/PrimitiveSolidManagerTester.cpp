@@ -31,7 +31,8 @@ TEST(PrimitiveSolidManager, getEdgeByIndex)
     mgr.updateSolid(modSolid);
 
     // retrieve the Edge using our index
-    Occ::Edge retrievedFrontRightEdge = mgr.getEdgeByIndex(frontRightEdgeIndex);
+    vector<Occ::Edge> retrievedFrontRightEdges = mgr.getEdgeByIndex(frontRightEdgeIndex);
+    Occ::Edge retrievedFrontRightEdge = retrievedFrontRightEdges[0];
 
     // Now, in order to check it, build it from scratch too
     front = newBox.getNamedFace(Occ::FaceName::front);
@@ -40,6 +41,7 @@ TEST(PrimitiveSolidManager, getEdgeByIndex)
 
     EXPECT_NE(frontRightEdge, retrievedFrontRightEdge);
     EXPECT_EQ(checkFrontRightEdge, retrievedFrontRightEdge);
+    EXPECT_EQ(retrievedFrontRightEdges.size(), 1);
 }
 
 TEST(PrimitiveSolidManager, FilletRetreivedEdge)
