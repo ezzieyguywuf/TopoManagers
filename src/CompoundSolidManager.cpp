@@ -15,9 +15,10 @@ CompoundSolidManager::CompoundSolidManager(Occ::BooleanSolid aSolid)
 }
 
 CompoundSolidManager::CompoundSolidManager(const CompoundSolidManager& aManager)
-    : ISolidManager(aManager.mySolid), mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
+    : ISolidManager(aManager.myFirstSolid, aManager.mappedEdges), 
+      mySolid(aManager.mySolid), 
+      mappedFaces(aManager.mappedFaces)
 {
-    ISolidManager::mapEdges();
 }
 
 CompoundSolidManager CompoundSolidManager::operator=(const CompoundSolidManager& aManager)

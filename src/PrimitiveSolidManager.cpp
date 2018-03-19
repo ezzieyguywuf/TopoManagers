@@ -19,7 +19,9 @@ PrimitiveSolidManager::PrimitiveSolidManager(Occ::Solid aSolid)
 }
 
 PrimitiveSolidManager::PrimitiveSolidManager(const PrimitiveSolidManager& aManager)
-    : ISolidManager(aManager.mySolid), mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
+    : ISolidManager(aManager.myFirstSolid, aManager.mappedEdges), 
+      mySolid(aManager.mySolid), 
+      mappedFaces(aManager.mappedFaces)
 {
     ISolidManager::mapEdges();
 }

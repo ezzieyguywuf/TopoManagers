@@ -24,6 +24,7 @@ class ISolidManager
     public:
         ISolidManager() = default;
         ISolidManager(const Occ::Solid& aSolid);
+        ISolidManager(const Occ::Solid& aSolid, const map<uint, pair<uint, uint>>& edges);
         virtual ~ISolidManager(){};
 
         // returns an index that can  be used to consistently retrieve a topological Edge
@@ -49,7 +50,6 @@ class ISolidManager
         void mapEdges();
         // Used to check validity of parameter in getModifiedSolid
         Occ::Solid myFirstSolid;
-    private:
         // A map in which the key will always refer to the same edge in
         // getSolid().getEdges(). This is done by identifying each edge by the two faces that
         // make it up. Therefore, in order to identify an edge, we simply keep track of

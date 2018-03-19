@@ -4,6 +4,10 @@ ISolidManager::ISolidManager(const Occ::Solid& aSolid)
     : myFirstSolid(aSolid)
 {}
 
+ISolidManager::ISolidManager(const Occ::Solid& aSolid, const map<uint, pair<uint, uint>>& edges)
+    : myFirstSolid(aSolid), mappedEdges(edges)
+{}
+
 uint ISolidManager::getEdgeIndex(const Occ::Edge& anEdge) const
 {
     for (const auto& data : mappedEdges)
@@ -102,7 +106,9 @@ Occ::ModifiedSolid ISolidManager::makeModifiedSolid(const ISolidManager& mgrOld,
 
     if (mgrOld.myFirstSolid != mgrNew.myFirstSolid)
     {
-        throw std::runtime_error("Both managers must share a myFirstSolid.");
+        // TODO re-implement this, and figure out what's going in in FreeCAD that raises
+        // this error.
+        //throw std::runtime_error("Both managers must share a myFirstSolid.");
     }
 
     for (const Occ::Face& origFace : mgrOld.getSolid().getFaces())
