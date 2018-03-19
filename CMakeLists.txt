@@ -10,9 +10,10 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Werror -Wextra -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Werror -Wextra -Wall")
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(BUILD_SHARED_LIBS ON)
+#set(BUILD_SHARED_LIBS ON)
 
 set (CMAKE_HELPER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake_helper")
+include(${CMAKE_HELPER_DIR}/functions.cmake)
 
 set(OCC_INCLUDE "/home/wolfie/Program/CAD_dev/opencascade-7.2.0/inc")
 set(OCC_LIBRARIES "/home/wolfie/Program/CAD_dev/opencascade-7.2.0/build/lin64/gcc/libd")
