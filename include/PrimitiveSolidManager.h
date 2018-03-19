@@ -19,6 +19,8 @@ class PrimitiveSolidManager : public ISolidManager
         // Note: need to extend to deal with deleted and generated faces. Right now only
         // deals with modified faces.
         void updateSolid(const Occ::ModifiedSolid& aModifiedSolid);
+        // TODO fix this so that it uses mgrNew.getFaceByIndex!!!!!! AND MOVE TO
+        // ISOLIDMANAGER!!
         // TODO does it make more sense for this to be non-static? Does it make it less
         // error-prone (i.e. swapping the two parameters)?
         //
