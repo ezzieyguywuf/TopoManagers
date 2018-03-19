@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 CompoundSolidManager::CompoundSolidManager(Occ::BooleanSolid aSolid)
-    : mySolid(aSolid)
+    : ISolidManager(aSolid), mySolid(aSolid)
 {
     uint i = 0;
     for (const Occ::Face& newFace : mySolid.getFaces())
@@ -15,13 +15,14 @@ CompoundSolidManager::CompoundSolidManager(Occ::BooleanSolid aSolid)
 }
 
 CompoundSolidManager::CompoundSolidManager(const CompoundSolidManager& aManager)
-    : mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
+    : ISolidManager(aManager.mySolid), mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
 {
     ISolidManager::mapEdges();
 }
 
 CompoundSolidManager CompoundSolidManager::operator=(const CompoundSolidManager& aManager)
 {
+    ISolidManager::myFirstSolid = aManager.myFirstSolid;
     mySolid = aManager.mySolid;
     mappedFaces = aManager.mappedFaces;
     ISolidManager::mapEdges();

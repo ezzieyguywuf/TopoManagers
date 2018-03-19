@@ -75,8 +75,7 @@ TEST(PrimitiveSolidManager, makeModifiedSolidInvalidFirstSolid)
     // create a different solid manager
     PrimitiveSolidManager mgr2(myBox5);
 
-    EXPECT_THROW(PrimitiveSolidManager::makeModifiedSolid(mgr1, myBox5), std::runtime_error);
-    EXPECT_THROW(PrimitiveSolidManager::makeModifiedSolid(mgr2, myBox4), std::runtime_error);
+    EXPECT_THROW(PrimitiveSolidManager::makeModifiedSolid(mgr1, mgr2), std::runtime_error);
 }
 
 TEST(PrimitiveSolidManager, makeModifiedSolid)

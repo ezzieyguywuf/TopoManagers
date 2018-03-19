@@ -9,7 +9,7 @@
 using std::vector;
 
 PrimitiveSolidManager::PrimitiveSolidManager(Occ::Solid aSolid)
-    : myFirstSolid(aSolid), mySolid(aSolid)
+    : ISolidManager(aSolid), mySolid(aSolid)
 {
     for (uint i = 0; i < mySolid.getFaces().size(); i++)
     {
@@ -19,14 +19,14 @@ PrimitiveSolidManager::PrimitiveSolidManager(Occ::Solid aSolid)
 }
 
 PrimitiveSolidManager::PrimitiveSolidManager(const PrimitiveSolidManager& aManager)
-    : myFirstSolid(aManager.myFirstSolid), mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
+    : ISolidManager(aManager.mySolid), mySolid(aManager.mySolid), mappedFaces(aManager.mappedFaces)
 {
     ISolidManager::mapEdges();
 }
 
 PrimitiveSolidManager PrimitiveSolidManager::operator=(const PrimitiveSolidManager& aManager)
 {
-    this->myFirstSolid = aManager.myFirstSolid;
+    ISolidManager::myFirstSolid = aManager.myFirstSolid;
     this->mySolid = aManager.mySolid;
     this->mappedFaces = aManager.mappedFaces;
     ISolidManager::mapEdges();
@@ -118,39 +118,6 @@ void PrimitiveSolidManager::updateSolid(const Occ::ModifiedSolid& aModifiedSolid
     }
 
     mySolid = aModifiedSolid.getNewSolid();
-}
-
-Occ::ModifiedSolid 
-    PrimitiveSolidManager::makeModifiedSolid(const PrimitiveSolidManager& mgrOld,
-                                             const PrimitiveSolidManager& mgrNew)
-{
-    map<uint, vector<uint>> newModifiedFaces;
-    uints newDeletedFaces;
-    uints newNewFaces;
-
-    if (mgrOld.myFirstSolid != mgrNew.myFirstSolid)
-    {
-        throw std::runtime_error("Both managers must share a myFirstSolid.");
-    }
-    uint i = 0;
-    for (auto data : mgrNew.mappedFaces)
-    {
-        if (data.second.size() > 0)
-        {
-            newModifiedFaces.emplace(i, data.second);
-        }
-        else
-        {
-            newDeletedFaces.push_back(i);
-        }
-        // TODO: new faces?!?
-        i++;
-    }
-    return Occ::ModifiedSolid(mgrOld.mySolid, 
-                              mgrNew.mySolid, 
-                              newModifiedFaces,
-                              newDeletedFaces, 
-                              newNewFaces);
 }
 
 const Occ::Solid& PrimitiveSolidManager::getSolid() const

@@ -23,6 +23,7 @@ class ISolidManager
 {
     public:
         ISolidManager() = default;
+        ISolidManager(const Occ::Solid& aSolid);
         virtual ~ISolidManager(){};
 
         // returns an index that can  be used to consistently retrieve a topological Edge
@@ -33,12 +34,21 @@ class ISolidManager
         virtual uint getFaceIndex(const Occ::Face& aFace) const = 0;
         // consistently returns the topological face refered to by i
         virtual vector<Occ::Face> getFaceByIndex(uint i) const = 0;
+        // Creates a Occ::ModifiedSolid that explains the differences between
+        // mgrOld.mySolid and mgrNew.mySolid
+        //
+        // throws std::runtime_error if mgrNew.myFirstSolid and mgrOld.myFirstSolid are not
+        // equivalent.
+        static Occ::ModifiedSolid makeModifiedSolid(const ISolidManager& mgrOld,
+                                                    const ISolidManager& mgrNew);
 
         virtual const Occ::Solid& getSolid() const = 0;
     protected:
         // Note: this must be called by the inheriting class after initializing whatever
         // face mapping they need to do. mapEdges makes use of getFaceIndex
         void mapEdges();
+        // Used to check validity of parameter in getModifiedSolid
+        Occ::Solid myFirstSolid;
     private:
         // A map in which the key will always refer to the same edge in
         // getSolid().getEdges(). This is done by identifying each edge by the two faces that

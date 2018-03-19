@@ -1,5 +1,9 @@
 #include <ISolidManager.h>
 
+ISolidManager::ISolidManager(const Occ::Solid& aSolid)
+    : myFirstSolid(aSolid)
+{}
+
 uint ISolidManager::getEdgeIndex(const Occ::Edge& anEdge) const
 {
     for (const auto& data : mappedEdges)
@@ -88,3 +92,49 @@ void ISolidManager::mapEdges()
         }
     }
 }
+
+Occ::ModifiedSolid ISolidManager::makeModifiedSolid(const ISolidManager& mgrOld,
+                                                    const ISolidManager& mgrNew)
+{
+    map<uint, vector<uint>> newModifiedFaces;
+    uints newDeletedFaces;
+    uints newNewFaces;
+
+    if (mgrOld.myFirstSolid != mgrNew.myFirstSolid)
+    {
+        throw std::runtime_error("Both managers must share a myFirstSolid.");
+    }
+
+    for (const Occ::Face& origFace : mgrOld.getSolid().getFaces())
+    {
+        // Since these managers are the same, the original index should work in the new
+        // manager.
+        uint i = mgrOld.getFaceIndex(origFace);
+        vector<Occ::Face> newFaces = mgrNew.getFaceByIndex(i);
+        vector<uint> newFaceIndices;
+        if (newFaces.size() > 0)
+        {
+            for (const Occ::Face& newFace : newFaces)
+            {
+                newFaceIndices.push_back(mgrNew.getSolid().getFaceIndex(newFace));
+            }
+            newModifiedFaces.emplace(i, newFaceIndices);
+        }
+        else
+        {
+            newDeletedFaces.push_back(i);
+        }
+        i++;
+    }
+    for (uint i = mgrOld.getSolid().getFaces().size() ; i < mgrNew.getSolid().getFaces().size() ; i++)
+    {
+        newNewFaces.push_back(i);
+    }
+    // ------ ORIG IMPLEMENTATION ------
+    return Occ::ModifiedSolid(mgrOld.getSolid(), 
+                              mgrNew.getSolid(), 
+                              newModifiedFaces,
+                              newDeletedFaces, 
+                              newNewFaces);
+}
+
