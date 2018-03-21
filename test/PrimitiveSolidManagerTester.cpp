@@ -10,4 +10,3 @@ TEST(PrimitiveSolidManager, Create){
     uint i = mgr.getFaceIndex(myBox.getNamedFace(Occ::FaceName::top));
     EXPECT_GE(i, 0);
 }
-
