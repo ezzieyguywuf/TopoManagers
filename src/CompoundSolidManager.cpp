@@ -34,10 +34,13 @@ uint CompoundSolidManager::getFaceIndex(const Occ::Face& aFace) const
 {
     for (const auto& data : mappedFaces)
     {
-        Occ::Face checkFace = this->getFaceByIndex(data.first)[0];
-        if (aFace == checkFace)
+        vector<Occ::Face> checkFaces = this->getFaceByIndex(data.first);
+        for (const Occ::Face& checkFace : checkFaces)
         {
-            return data.first;
+            if (aFace.isSimilar(checkFace))
+            {
+                return data.first;
+            }
         }
     }
     throw std::runtime_error("That face does not appear to originate from any of mySolid.getModifiedSolids()");
@@ -45,11 +48,38 @@ uint CompoundSolidManager::getFaceIndex(const Occ::Face& aFace) const
 
 vector<Occ::Face> CompoundSolidManager::getFaceByIndex(uint i) const
 {
+    // get orig face
     array<uint, 3> origMap = mappedFaces.at(i);
     const Occ::ModifiedSolid& modSolid = mySolid.getModifiedSolids()[origMap[0]];
     const Occ::Face& origFace = modSolid.getOrigSolid().getFaces()[origMap[1]];
-    uint index = modSolid.getModifiedFaceIndices(origFace)[origMap[2]];
-    return {modSolid.getNewSolid().getFaces()[index]};
+
+    // create return value vector
+    vector<Occ::Face> outFaces;
+
+    // check for modified faces
+    vector<uint> modFaces = modSolid.getModifiedFaceIndices(origFace);
+    for (const uint& i : modFaces)
+    {
+        outFaces.push_back(modSolid.getNewSolid().getFaces()[i]);
+    }
+
+    if (outFaces.size() > 0)
+    {
+        return outFaces;
+    }
+
+    vector<uint> newFaces = modSolid.getNewFaceIndices(origFace);
+    for (const uint& i : newFaces)
+    {
+        outFaces.push_back(modSolid.getNewSolid().getFaces()[i]);
+    }
+
+    if (outFaces.size() == 0)
+    {
+        throw std::runtime_error("That face did not get modfied nor did it generate a new face.");
+    }
+
+    return outFaces;
 }
 
 const Occ::Solid& CompoundSolidManager::getSolid() const
@@ -108,9 +138,23 @@ void CompoundSolidManager::updateMappedFaces(uint i, const Occ::ModifiedSolid& n
         {
             // get the original constiutent face
             const Occ::Face origConstituentFace = origModSolid.getOrigSolid().getFaces()[indices[1]];
-            // find out what the new constiuent face(s) is/are
-            vector<uint> newConstituentFaceIndices = newModSolid.getModifiedFaceIndices(origConstituentFace);
-            indices[1] = newConstituentFaceIndices[indices[2]];
+            // find out what the new constituent face(s) is/are
+            vector<uint> modFaces = newModSolid.getModifiedFaceIndices(origConstituentFace);
+            if (modFaces.size() > 0)
+            {
+                indices[1] = modFaces[indices[2]];
+                return;
+            }
+
+            vector<uint> newFaces = newModSolid.getNewFaceIndices(origConstituentFace);
+            if (newFaces.size() > 0)
+            {
+                // TODO: what happens if more than one face was generated? How should we
+                // handle this?!
+                indices[1] = newFaces[0];
+                return;
+            }
+            throw std::runtime_error("Was unable to determine what happened to that constituent face.");
         }
     }
 }

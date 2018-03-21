@@ -108,7 +108,7 @@ Occ::ModifiedSolid ISolidManager::makeModifiedSolid(const ISolidManager& mgrOld,
 {
     map<uint, vector<uint>> newModifiedFaces;
     uints newDeletedFaces;
-    uints newNewFaces;
+    map<int, vector<uint>> newNewFaces;
 
     if (mgrOld.myFirstSolid != mgrNew.myFirstSolid)
     {
@@ -138,7 +138,7 @@ Occ::ModifiedSolid ISolidManager::makeModifiedSolid(const ISolidManager& mgrOld,
     }
     for (uint i = mgrOld.getSolid().getFaces().size() ; i < mgrNew.getSolid().getFaces().size() ; i++)
     {
-        newNewFaces.push_back(i);
+        newNewFaces[-1].push_back(i);
     }
     // ------ ORIG IMPLEMENTATION ------
     return Occ::ModifiedSolid(mgrOld.getSolid(), 

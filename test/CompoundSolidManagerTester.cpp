@@ -54,33 +54,37 @@ TEST(CompoundSolidManager, updateSolidWithBooleanFuse)
 
 TEST(CompoundSolidManager, updateSolidWithBooleanCutTranslated)
 {
-    //// Create the original fusion
-    //Occ::Box myBox1 = Occ::SolidMaker::makeBox(10, 10, 10);
-    //Occ::Box myBox2 = Occ::SolidMaker::makeBox(10, 10, 10);
-    //Occ::BooleanSolid myFuse = Occ::SolidModifier::makeFusion(myBox1, myCyl);
-    //CompoundSolidManager mgr(myFuse);
+    // Create the original cut
+    Occ::Box myBox1 = Occ::SolidMaker::makeBox(10, 10, 10);
+    Occ::Box myBox2 = Occ::SolidMaker::makeBox(6, 3, 4);
+    myBox2.translate(-1, 3.5, 8);
+    BRepAlgoAPI_Cut mkCut(myBox1.getShape(), myBox2.getShape());
+    Occ::BooleanSolid myCut = Occ::SolidMaker::makeBoolean(mkCut);
+    CompoundSolidManager mgr(myCut);
 
-    //// Get a constant reference. We know from testing that Edge[9] is the one between the
-    //// cubic "top" and cubic "front" on the fused solid
-    //uint i = mgr.getEdgeIndex(mgr.getSolid().getEdges()[9]);
+    // Get a constant reference. We know from testing that Edge[5] is the one between the
+    // cubic "top" and cubic "front" on the fused solid
+    uint i = mgr.getEdgeIndex(mgr.getSolid().getEdges()[5]);
 
-    //// Create the updated fusion
-    //Occ::Cylinder myCyl2 = Occ::SolidMaker::makeCylinder(2.5, 5);
-    //Occ::BooleanSolid myUpdatedFuse = Occ::SolidModifier::makeFusion(myBox, myCyl2);
+    // Create the updated cut
+    Occ::Box myBox3 = Occ::SolidMaker::makeBox(15, 3, 4);
+    myBox3.translate(-1, 3.5, 8);
+    BRepAlgoAPI_Cut mkCut2(myBox1.getShape(), myBox3.getShape());
+    Occ::BooleanSolid myCut2 = Occ::SolidMaker::makeBoolean(mkCut2);
 
-    //// Prepare the information to update our CompoundSolidManager
-    //Occ::ModifiedSolid cylMod(myCyl, myCyl2);
+    // Prepare the information to update our CompoundSolidManager
+    Occ::ModifiedSolid boxMod(myBox2, myBox3);
 
-    //// update our CompoundSolidManager
-    //mgr.updateSolid(myUpdatedFuse, {cylMod});
+    // update our CompoundSolidManager
+    mgr.updateSolid(myCut2, {boxMod});
 
-    //// retrieve our desired Edge, as well as the original (for comparison).
-    //const Occ::Edge& originalEdge = myFuse.getEdges()[9];
-    //vector<Occ::Edge> retreivedEdges = mgr.getEdgeByIndex(i);
-    //const Occ::Edge& retreivedEdge = retreivedEdges[0];
+    // retrieve our desired Edge, as well as the original (for comparison).
+    const Occ::Edge& originalEdge = myCut.getEdges()[5];
+    vector<Occ::Edge> retreivedEdges = mgr.getEdgeByIndex(i);
 
-    //EXPECT_TRUE(originalEdge.overlaps(retreivedEdge));
-    //EXPECT_EQ(retreivedEdges.size(), 1);
+    EXPECT_EQ(retreivedEdges.size(), 2);
+    EXPECT_TRUE(originalEdge.overlaps(retreivedEdges[0]));
+    EXPECT_TRUE(originalEdge.overlaps(retreivedEdges[1]));
 }
 
 TEST(CompoundSolidManager, updateSolidWithBooleanCut)
