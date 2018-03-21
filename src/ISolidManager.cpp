@@ -63,6 +63,7 @@ void ISolidManager::mapEdges()
         count = 0;
         for (const Occ::Face& face1 : theSolid.getFaces())
         {
+            bool found = false;
             if (not face1.containsEdge(checkEdge))
             {
                 continue;
@@ -76,12 +77,17 @@ void ISolidManager::mapEdges()
                 }
                 if (face2.containsEdge(checkEdge))
                 {
+                    found = true;
                     count++;
                     uint i1 = this->getFaceIndex(face1);
                     uint i2 = this->getFaceIndex(face2);
                     mappedEdges.emplace(mappedEdges.size(), std::make_pair(i1, i2));
                     break;
                 }
+            }
+            if (found)
+            {
+                break;
             }
         }
 

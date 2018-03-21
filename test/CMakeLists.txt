@@ -17,6 +17,7 @@ set(NEEDED_LIBS
 
 AddTest("PrimitiveSolidManagerTester" ${NEEDED_LIBS} PrimitiveSolidManager)
 AddTest("CompoundSolidManagerTester" ${NEEDED_LIBS} CompoundSolidManager)
+AddTest("ISolidManagerTester" ${NEEDED_LIBS} PrimitiveSolidManager)
 
 add_executable("SimpleTest" "SimpleTest.cpp")
 target_link_libraries("SimpleTest" ${NEEDED_LIBS} PrimitiveSolidManager CompoundSolidManager)

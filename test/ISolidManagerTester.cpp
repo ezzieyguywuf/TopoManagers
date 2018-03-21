@@ -28,8 +28,8 @@ TEST(ISolidManager, makeModifiedSolidInvalidFirstSolid)
     // create a different solid manager
     PrimitiveSolidManager mgr2(myBox5);
 
-    EXPECT_THROW(ISolidManager::makeModifiedSolid(mgr1, myBox5), std::runtime_error);
-    EXPECT_THROW(ISolidManager::makeModifiedSolid(mgr2, myBox4), std::runtime_error);
+    EXPECT_THROW(ISolidManager::makeModifiedSolid(mgr1, mgr2), std::runtime_error);
+    EXPECT_THROW(ISolidManager::makeModifiedSolid(mgr2, mgr1), std::runtime_error);
 }
 
 TEST(ISolidManager, makeModifiedSolid)
@@ -62,3 +62,65 @@ TEST(ISolidManager, makeModifiedSolid)
 
     EXPECT_EQ(genVal, checkVal);
 }
+
+TEST(ISolidManager, getAnyEdgeByIndex)
+{
+    // create the box
+    Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
+    // create the solid manager
+    PrimitiveSolidManager mgr(myBox);
+
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[0]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[1]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[2]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[3]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[4]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[5]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[6]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[7]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[8]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[9]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[10]));
+    EXPECT_NO_THROW(mgr.getEdgeIndex(myBox.getEdges()[11]));
+}
+
+TEST(ISolidManager, getEdgeByIndex)
+{
+    // create the box
+    Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
+    // create the solid manager
+    PrimitiveSolidManager mgr(myBox);
+
+    // get an Edge index (note: in a real-world application, the user would select an edge
+    // with a mouse.)
+    Occ::Face front = myBox.getNamedFace(Occ::FaceName::front);
+    Occ::Face right = myBox.getNamedFace(Occ::FaceName::right);
+    Occ::Edge frontRightEdge = front.getCommonEdge(right);
+    uint frontRightEdgeIndex = mgr.getEdgeIndex(frontRightEdge);
+
+    // update the managed solid
+    Occ::Box newBox = Occ::SolidMaker::makeBox(5, 5, 5);
+    Occ::ModifiedSolid modSolid(myBox, newBox);
+    mgr.updateSolid(modSolid);
+
+    // retrieve the Edge using our index
+    vector<Occ::Edge> retrievedFrontRightEdges = mgr.getEdgeByIndex(frontRightEdgeIndex);
+    Occ::Edge retrievedFrontRightEdge = retrievedFrontRightEdges[0];
+
+    // Now, in order to check it, build it from scratch too
+    front = newBox.getNamedFace(Occ::FaceName::front);
+    right = newBox.getNamedFace(Occ::FaceName::right);
+    Occ::Edge checkFrontRightEdge = front.getCommonEdge(right);
+
+    EXPECT_NE(frontRightEdge, retrievedFrontRightEdge);
+    EXPECT_EQ(checkFrontRightEdge, retrievedFrontRightEdge);
+    EXPECT_EQ(retrievedFrontRightEdges.size(), 1);
+}
+
+//TEST(ISolidManager, FilletRetreivedEdge)
+//{
+    //// TODO finish writing test?
+    //Occ::Box myBox(Occ::SolidMaker::makeBox(10, 10, 10));
+    //// create the solid manager
+    //PrimitiveSolidManager mgr(myBox);
+//}
