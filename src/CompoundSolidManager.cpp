@@ -110,12 +110,7 @@ void CompoundSolidManager::updateMappedFaces(uint i, const Occ::ModifiedSolid& n
             const Occ::Face origConstituentFace = origModSolid.getOrigSolid().getFaces()[indices[1]];
             // find out what the new constiuent face(s) is/are
             vector<uint> newConstituentFaceIndices = newModSolid.getModifiedFaceIndices(origConstituentFace);
-            if (newConstituentFaceIndices.size() > 1)
-            {
-                std::clog << "Constituent face has been split. Only taking the first value. TODO: be better.";
-            }
-            indices[1] = newConstituentFaceIndices[0];
-            break;
+            indices[1] = newConstituentFaceIndices[indices[2]];
         }
     }
 }
