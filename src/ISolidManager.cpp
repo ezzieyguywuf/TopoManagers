@@ -33,15 +33,9 @@ vector<Occ::Edge> ISolidManager::getEdgeByIndex(uint i) const
     {
         for (const Occ::Face& face2 : faces2)
         {
-            for (const auto& edge1 : face1.getEdges())
+            if (face1.sharesEdge(face2))
             {
-                for (const auto& edge2 : face2.getEdges())
-                {
-                    if (edge1.isSimilar(edge2))
-                    {
-                        outEdges.push_back(edge1);
-                    }
-                }
+                outEdges.push_back(face1.getCommonEdge(face2));
             }
         }
     }
