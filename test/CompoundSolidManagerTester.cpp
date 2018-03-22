@@ -76,6 +76,7 @@ TEST(CompoundSolidManager, updateSolidWithBooleanCutTranslated)
     Occ::ModifiedSolid boxMod(myBox2, myBox3);
 
     // update our CompoundSolidManager
+    mgr.writeAllSolids("preUpdate_");
     mgr.updateSolid(myCut2, {boxMod});
 
     // retrieve our desired Edge, as well as the original (for comparison).

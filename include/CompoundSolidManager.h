@@ -67,6 +67,10 @@ class CompoundSolidManager : public ISolidManager
         // The unique ID for each face in mySolid will consist of a set of three values
         // (i,j,k). Please check the documentation for the getConstituentFace() method if
         // Occ::BooleanSolid for more information.
+        //
+        // TODO: change to map<uint, map<uint, pair<uint, uint>>> where in 
+        // map<i, map<j, pair<k,l>>>, i = the constant reference, j = which modified solid
+        // in mySolid, k is the origFace index and l is the newFace index.
         map<uint, array<uint, 3>> mappedFaces;
 };
 

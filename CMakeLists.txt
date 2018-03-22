@@ -33,6 +33,7 @@ set(OCC_LIBS
     TKLCAF
     TKBool
     TKFillet
+    TKFeat
     #TKShHealing
     )
 

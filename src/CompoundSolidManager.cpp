@@ -1,6 +1,7 @@
 #include <CompoundSolidManager.h>
 
 #include <stdexcept>
+#include <string>
 
 CompoundSolidManager::CompoundSolidManager(Occ::BooleanSolid aSolid)
     : ISolidManager(aSolid), mySolid(aSolid)
@@ -138,7 +139,14 @@ void CompoundSolidManager::updateMappedFaces(uint i, const Occ::ModifiedSolid& n
         {
             // get the original constiutent face
             const Occ::Face origConstituentFace = origModSolid.getOrigSolid().getFaces()[indices[1]];
-            // find out what the new constituent face(s) is/are
+            if (newModSolid.isDeleted(origConstituentFace))
+            {
+                throw std::runtime_error("That face was deleted, it cannot be the constituent face on the newSolid.");
+                return;
+            }
+
+            // If not deleted, we should be able to find out what happened. First check
+            // for modifications
             vector<uint> modFaces = newModSolid.getModifiedFaceIndices(origConstituentFace);
             if (modFaces.size() > 0)
             {
@@ -146,6 +154,7 @@ void CompoundSolidManager::updateMappedFaces(uint i, const Occ::ModifiedSolid& n
                 return;
             }
 
+            // Next, see if it was somehow generated from something (this shouldn't happen)
             vector<uint> newFaces = newModSolid.getNewFaceIndices(origConstituentFace);
             if (newFaces.size() > 0)
             {
@@ -154,6 +163,8 @@ void CompoundSolidManager::updateMappedFaces(uint i, const Occ::ModifiedSolid& n
                 indices[1] = newFaces[0];
                 return;
             }
+
+            // Finally, throw an error if we don't know what happened to the face.
             throw std::runtime_error("Was unable to determine what happened to that constituent face.");
         }
     }

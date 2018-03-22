@@ -9,8 +9,12 @@
 #include <OccEdge.h>
 #include <TopoDS_Shape.hxx>
 #include <BRepFilletAPI_MakeFillet.hxx>
+#include <BRepAlgoAPI_Cut.hxx>
 #include <TopTools_IndexedMapOfShape.hxx>
+#include <TopTools_ListIteratorOfListOfShape.hxx>
 #include <TopExp.hxx>
+#include <BRepFeat_Builder.hxx>
+#include <TopExp_Explorer.hxx>
 #include <TopoDS.hxx>
 
 #include <iostream>
@@ -18,29 +22,63 @@
 int main(void)
 {
     Occ::Box myBox1(Occ::SolidMaker::makeBox(10, 10, 10));
-    Occ::Box myBox2(Occ::SolidMaker::makeBox(5, 10, 10));
-    Occ::Box myBox3(Occ::SolidMaker::makeBox(10, 5, 10));
-    Occ::Box myBox4(Occ::SolidMaker::makeBox(10, 10, 5));
-    Occ::Box myBox5(Occ::SolidMaker::makeBox(5, 10, 5));
+    Occ::Box myBox2(Occ::SolidMaker::makeBox(6, 3, 4));
+    myBox2.translate(-1, 3.5, 8);
 
-    // create the solid managers
-    PrimitiveSolidManager mgr1(myBox1);
-    PrimitiveSolidManager mgr2(myBox1);
+    BRepAlgoAPI_Cut mkCut(myBox1.getShape(), myBox2.getShape());
+    mkCut.Build();
+    //BRepFeat_Builder mkCut;
+    //mkCut.Init(myBox1.getShape(), myBox2.getShape());
+    //mkCut.SetOperation(0);
+    //mkCut.Perform();
 
-    // modify one more than the other
-    Occ::ModifiedSolid mod1(myBox1, myBox2);
-    Occ::ModifiedSolid mod2(myBox2, myBox3);
-    Occ::ModifiedSolid mod3(myBox3, myBox4);
 
-    mgr1.updateSolid(mod1);
-    mgr1.updateSolid(mod2);
-    mgr1.updateSolid(mod3);
+    Occ::Solid cutSolid(mkCut.Shape());
 
-    mgr2.updateSolid(mod1);
+    myBox1.writeFile("box1.brep");
+    myBox2.writeFile("box2.brep");
+    cutSolid.writeFile("cutSolid.brep");
 
-    // this will be the expected output
-    Occ::ModifiedSolid genVal = PrimitiveSolidManager::makeModifiedSolid(mgr1, mgr2);
-    const Occ::ModifiedSolid checkVal(myBox2, myBox4);
-    std::cout << "check?" << (genVal == checkVal) << std::endl;
+    std::cout << "using TopExp_EXplorer" << std::endl;
+    TopExp_Explorer expl(mkCut.Shape2(), TopAbs_FACE);
+    uint i=0;
+    for(; expl.More(); expl.Next())
+    {
+        const TopoDS_Shape& aFace = expl.Current();
+        const TopTools_ListOfShape& modified = mkCut.Modified(aFace);
+        std::cout << "i = " << i << ", " << "numGenerated = " << modified.Extent() << std::endl;
+        i++;
+    }
+
+    i = 0;
+    Occ::Solid aSolid(mkCut.Shape2());
+    aSolid.writeFile("mkCut.Shape2.brep");
+    std::cout << "using remade solid" << std::endl;
+    for (const Occ::Face& aFace : aSolid.getFaces())
+    {
+        TopTools_ListOfShape generated = mkCut.Modified(aFace.getShape());
+        std::cout << "i = " << i << ", " << "numGenerated = " << generated.Extent() << std::endl;
+        i++;
+    }
+
+    std::cout << "using orig solid" << std::endl;
+    i = 0;
+    for (const Occ::Face& aFace : myBox2.getFaces())
+    {
+        TopTools_ListOfShape generated = mkCut.Modified(aFace.getShape());
+        std::cout << "i = " << i << ", " << "numGenerated = " << generated.Extent() << std::endl;
+        i++;
+    }
+    
+    i = 0;
+    std::cout << "looping result" << std::endl;
+    for (const Occ::Face& aFace : cutSolid.getFaces())
+    {
+        TopTools_ListOfShape generated = mkCut.Modified(aFace.getShape());
+        std::cout << "i = " << i << ", " << "numGenerated = " << generated.Extent() << std::endl;
+        i++;
+    }
+    //TopTools_ListIteratorOfListOfShape it(Modified);
+
     return 0;
 }
