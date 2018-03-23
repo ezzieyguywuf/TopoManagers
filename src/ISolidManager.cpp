@@ -106,7 +106,9 @@ Occ::ModifiedSolid ISolidManager::makeModifiedSolid(const ISolidManager& mgrOld,
 
     if (mgrOld.myFirstSolid != mgrNew.myFirstSolid)
     {
-        throw std::runtime_error("Both managers must share a myFirstSolid.");
+        // TODO figure out why I need to comment this out for FeauterPartBoolean to
+        // operate properly (in FreeCAD)
+        //throw std::runtime_error("Both managers must share a myFirstSolid.");
     }
 
     for (const Occ::Face& origFace : mgrOld.getSolid().getFaces())

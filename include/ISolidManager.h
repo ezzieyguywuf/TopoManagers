@@ -35,6 +35,10 @@ class ISolidManager
         virtual uint getFaceIndex(const Occ::Face& aFace) const = 0;
         // consistently returns the topological face refered to by i
         virtual vector<Occ::Face> getFaceByIndex(uint i) const = 0;
+        // apply a translation to the underlying solid. 
+        // TODO, there is quite a bit of boilerplate with this, is there a way to reduce
+        // that?
+        virtual void translate(double dx, double dy, double dz) = 0;
         // Creates a Occ::ModifiedSolid that explains the differences between
         // mgrOld.mySolid and mgrNew.mySolid
         //

@@ -10,6 +10,7 @@ class PrimitiveSolidManager : public ISolidManager
         PrimitiveSolidManager(Occ::Solid aSolid);
         uint getFaceIndex(const Occ::Face& aFace) const override;
         vector<Occ::Face> getFaceByIndex(uint i) const override;
+        void translate(double dx, double dy, double dz) override;
 
         // rule of three
         PrimitiveSolidManager(const PrimitiveSolidManager& aManager);

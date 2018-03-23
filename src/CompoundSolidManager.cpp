@@ -88,6 +88,11 @@ const Occ::Solid& CompoundSolidManager::getSolid() const
     return mySolid;
 }
 
+void CompoundSolidManager::translate(double dx, double dy, double dz)
+{
+    mySolid.translate(dx, dy, dz);
+}
+
 void CompoundSolidManager::updateSolid(Occ::BooleanSolid newSolid, 
                                        vector<Occ::ModifiedSolid> modifiedBaseSolids)
 {

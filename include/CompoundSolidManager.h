@@ -42,6 +42,7 @@ class CompoundSolidManager : public ISolidManager
         // TODO: is this true????
         vector<Occ::Face> getFaceByIndex(uint i) const override;
         const Occ::Solid& getSolid() const override;
+        void translate(double dx, double dy, double dz) override;
 
         // When we update our solid, we need two things:
         //     1) The new Occ::BooleanSolid
@@ -60,7 +61,6 @@ class CompoundSolidManager : public ISolidManager
         void updateSolid(Occ::BooleanSolid newSolid, vector<Occ::ModifiedSolid> modifiedBaseSolids);
     private:
         // helper method used by updateSolid
-        // TODO: need to deal with deleted faces and split faces.
         void updateMappedFaces(uint i, const Occ::ModifiedSolid& newModSolid);
 
         Occ::BooleanSolid mySolid;

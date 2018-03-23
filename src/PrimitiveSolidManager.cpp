@@ -125,6 +125,11 @@ void PrimitiveSolidManager::updateSolid(const Occ::ModifiedSolid& aModifiedSolid
     mySolid = aModifiedSolid.getNewSolid();
 }
 
+void PrimitiveSolidManager::translate(double dx, double dy, double dz)
+{
+    mySolid.translate(dx, dy, dz);
+}
+
 const Occ::Solid& PrimitiveSolidManager::getSolid() const
 {
     return mySolid;
