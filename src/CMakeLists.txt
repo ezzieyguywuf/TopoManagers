@@ -1,6 +1,6 @@
-AddLib(ISolidManager OccModifiedSolidd)
+AddLib(ISolidManager OccModifiedSolid)
 AddLib(PrimitiveSolidManager ISolidManager)
-AddLib(CompoundSolidManager ISolidManager OccBooleanSolidd)
+AddLib(CompoundSolidManager ISolidManager OccBooleanSolid)
 
 #add_library(PrimitiveSolidManager STATIC ISolidManager PrimitiveSolidManager.cpp)
 #target_link_libraries(PrimitiveSolidManager ${OCC_LIBS} OccSolidd)
