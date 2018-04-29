@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.5.1)
 
 project(TopoManager)
 
@@ -8,7 +8,6 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Werror -Wextra -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Werror -Wextra -Wall")
-#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #set(BUILD_SHARED_LIBS ON)
 

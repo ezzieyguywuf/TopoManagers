@@ -11,6 +11,7 @@ set(NEEDED_LIBS
     OccShape
     OccCylinder
     OccBooleanSolid
+    OccPrimitive
     OccSolidModifier
     OccModifiedSolid
     OccSolidMaker)

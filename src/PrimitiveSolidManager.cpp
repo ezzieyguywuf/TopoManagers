@@ -111,14 +111,16 @@ void PrimitiveSolidManager::updateSolid(const Occ::ModifiedSolid& aModifiedSolid
 
     for (uint i : toAdd)
     {
-        mappedFaces.emplace(mappedFaces.size(), i);
+        mappedFaces.at(mappedFaces.size()).push_back(i);
+        //mappedFaces.emplace(mappedFaces.size(), i);
     }
 
     for (const auto& data: aModifiedSolid.getNewFaceMap())
     {
         for (uint i : data.second)
         {
-            mappedFaces.emplace(mappedFaces.size(), i);
+            mappedFaces.at(mappedFaces.size()).push_back(i);
+            //mappedFaces.emplace(mappedFaces.size(), i);
         }
     }
 
